@@ -157,6 +157,42 @@
             box-shadow: var(--glow-purple);
         }
         
+        .nav-tab-highlight {
+            background: linear-gradient(135deg, rgba(234, 179, 8, 0.3), rgba(249, 115, 22, 0.3));
+            border-color: var(--nebula-yellow) !important;
+            color: var(--nebula-yellow) !important;
+            animation: pulseGlow 2s ease-in-out infinite;
+            position: relative;
+        }
+        
+        .nav-tab-highlight::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 10px;
+            height: 10px;
+            background: var(--nebula-orange);
+            border-radius: 50%;
+            animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+        
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(234, 179, 8, 0.3); }
+            50% { box-shadow: 0 0 35px rgba(234, 179, 8, 0.6); }
+        }
+        
+        @keyframes ping {
+            75%, 100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+        
+        .nav-tab-highlight.active {
+            background: linear-gradient(135deg, rgba(234, 179, 8, 0.4), rgba(249, 115, 22, 0.4));
+        }
+        
         /* Content Sections */
         .content {
             max-width: 1600px;
@@ -597,6 +633,192 @@
             padding-left: 15px;
             border-left: 3px solid var(--nebula-purple);
         }
+        
+        /* Interactive Mock UI Styles */
+        .mock-btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+        
+        .mock-btn-secondary {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: var(--text-secondary);
+        }
+        
+        .mock-btn-secondary:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.4);
+        }
+        
+        .mock-btn-primary {
+            background: linear-gradient(135deg, var(--nebula-purple), var(--nebula-blue));
+            border: none;
+            color: white;
+        }
+        
+        .mock-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+        }
+        
+        .mock-input {
+            width: 100%;
+            padding: 10px 14px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: var(--nebula-cyan);
+            font-size: 14px;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+        
+        .mock-input:focus {
+            outline: none;
+            border-color: var(--nebula-cyan);
+            box-shadow: 0 0 10px rgba(44, 202, 201, 0.3);
+        }
+        
+        .mock-dropdown {
+            padding: 10px 14px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .mock-dropdown:hover {
+            border-color: var(--nebula-purple);
+        }
+        
+        .mock-dropdown.open {
+            border-color: var(--nebula-purple);
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: -1px;
+            right: -1px;
+            background: #1a1a2e;
+            border: 1px solid var(--nebula-purple);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            z-index: 100;
+            overflow: hidden;
+        }
+        
+        .mock-dropdown.open .dropdown-menu {
+            display: block;
+        }
+        
+        .dropdown-item {
+            padding: 10px 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .dropdown-item:hover {
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--nebula-purple);
+        }
+        
+        .toggle-group {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .toggle-btn {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+        
+        .toggle-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .toggle-btn.active {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: var(--nebula-green);
+            color: var(--nebula-green);
+            font-weight: 500;
+        }
+        
+        .toggle-btn-blue.active {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: var(--nebula-blue);
+            color: var(--nebula-blue);
+        }
+        
+        .accrual-options {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .accrual-btn {
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .accrual-btn:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .accrual-btn.active {
+            background: rgba(139, 92, 246, 0.2);
+            border-color: var(--nebula-purple);
+            color: var(--nebula-purple);
+            font-weight: 500;
+        }
+        
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: linear-gradient(135deg, var(--nebula-purple), var(--nebula-blue));
+            color: white;
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-weight: 500;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
@@ -615,6 +837,7 @@
         <button class="nav-tab" data-section="modules">📦 Modules</button>
         <button class="nav-tab" data-section="database">🗄️ Database</button>
         <button class="nav-tab" data-section="flow">🔄 Data Flow</button>
+        <button class="nav-tab nav-tab-highlight" data-section="leave">⭐ Leave Module Plan</button>
     </nav>
     
     <main class="content">
@@ -1399,6 +1622,415 @@
                 </div>
             </div>
         </section>
+        
+        <!-- Leave Module Plan Section -->
+        <section id="leave" class="section">
+            <h2 class="section-title">⭐ Leave Module Plan</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 40px; max-width: 800px; margin-left: auto; margin-right: auto;">
+                A comprehensive leave management system with flexible policies, accrual methods, balance tracking, and payroll integration.
+            </p>
+            
+            <!-- Policy UI Preview -->
+            <div class="tech-card" style="margin-bottom: 40px; overflow: hidden;">
+                <h3 class="tech-card-title" style="margin-bottom: 20px;">📱 Leave Policy Configuration UI Preview <span style="font-size: 12px; color: var(--nebula-cyan); font-weight: normal;">(Interactive Demo)</span></h3>
+                <div style="background: #1a1a2e; border-radius: 12px; padding: 24px; border: 1px solid rgba(139, 92, 246, 0.2);">
+                    <!-- Mock UI Header -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <div>
+                            <div style="font-size: 18px; font-weight: 600; margin-bottom: 4px;">Create Leave Policy</div>
+                            <div style="font-size: 12px; color: var(--text-muted);">Configure how employees earn and use leave</div>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="mock-btn mock-btn-secondary" onclick="showToast('Policy creation cancelled')">Cancel</button>
+                            <button class="mock-btn mock-btn-primary" onclick="showToast('✓ Policy saved successfully!')">Save Policy</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Mock Form Grid -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                        <!-- Policy Name -->
+                        <div>
+                            <label style="display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px;">Policy Name *</label>
+                            <input type="text" class="mock-input" value="Annual Leave" placeholder="Enter policy name">
+                        </div>
+                        <!-- Policy Group -->
+                        <div>
+                            <label style="display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px;">Policy Group</label>
+                            <div class="mock-dropdown" onclick="toggleDropdown(this)">
+                                <span class="dropdown-value">Standard Leave</span>
+                                <span style="font-size: 10px;">▼</span>
+                                <div class="dropdown-menu">
+                                    <div class="dropdown-item" onclick="selectDropdownItem(event, 'Standard Leave')">Standard Leave</div>
+                                    <div class="dropdown-item" onclick="selectDropdownItem(event, 'Sick Leave')">Sick Leave</div>
+                                    <div class="dropdown-item" onclick="selectDropdownItem(event, 'Maternity/Paternity')">Maternity/Paternity</div>
+                                    <div class="dropdown-item" onclick="selectDropdownItem(event, 'Unpaid Leave')">Unpaid Leave</div>
+                                    <div class="dropdown-item" onclick="selectDropdownItem(event, 'Custom')">Custom</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Paid Leave Toggle -->
+                        <div>
+                            <label style="display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px;">Paid Leave?</label>
+                            <div class="toggle-group" data-group="paid-leave">
+                                <button class="toggle-btn active" data-value="yes" onclick="toggleOption(this)">✓ Yes</button>
+                                <button class="toggle-btn" data-value="no" onclick="toggleOption(this)">No</button>
+                            </div>
+                        </div>
+                        <!-- Track In -->
+                        <div>
+                            <label style="display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px;">Track Leave In</label>
+                            <div class="toggle-group" data-group="track-in">
+                                <button class="toggle-btn toggle-btn-blue active" data-value="days" onclick="toggleOption(this)">📅 Days</button>
+                                <button class="toggle-btn toggle-btn-blue" data-value="hours" onclick="toggleOption(this)">⏰ Hours</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Accrual Method Section -->
+                    <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <div style="font-size: 14px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                            <span style="width: 24px; height: 24px; background: rgba(139, 92, 246, 0.2); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px;">📈</span>
+                            Accrual Method
+                        </div>
+                        <div class="accrual-options">
+                            <button class="accrual-btn" data-value="none" onclick="selectAccrual(this)">Does Not Accrue</button>
+                            <button class="accrual-btn" data-value="hourly" onclick="selectAccrual(this)">Hourly Worked</button>
+                            <button class="accrual-btn active" data-value="fixed" onclick="selectAccrual(this)">✓ Fixed Accrual</button>
+                            <button class="accrual-btn" data-value="regular" onclick="selectAccrual(this)">Regular Hours Based</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Balance Preview -->
+                    <div style="margin-top: 24px; padding: 16px; background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 10px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Preview: Employee Balance</div>
+                                <div id="balance-preview" style="font-size: 24px; font-weight: 700; color: var(--nebula-cyan); margin-top: 4px;">28 days</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 11px; color: var(--text-muted);">Yearly Entitlement</div>
+                                <div style="font-size: 14px; color: var(--text-secondary);">+ 5.6 weeks statutory</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Toast Notification -->
+            <div id="toast" class="toast"></div>
+            
+            <!-- Leave Policy Components -->
+            <div class="module-category">
+                <h3 class="category-title">📋 1. Policy Basics</h3>
+                <div class="module-grid">
+                    <div class="module-card" style="--card-color: #8b5cf6;">
+                        <div class="module-header">
+                            <div class="module-icon" style="background: rgba(139, 92, 246, 0.2);">📝</div>
+                            <h4 class="module-title">Policy Identity</h4>
+                        </div>
+                        <p class="module-desc">Core settings that define what the leave policy is and how it appears.</p>
+                        <div class="module-features">
+                            <span class="module-feature">Policy Name</span>
+                            <span class="module-feature">Policy Group</span>
+                            <span class="module-feature">Paid/Unpaid</span>
+                            <span class="module-feature">Track in Hours/Days</span>
+                            <span class="module-feature">Hide from Employees</span>
+                        </div>
+                    </div>
+                    
+                    <div class="module-card" style="--card-color: #f97316;">
+                        <div class="module-header">
+                            <div class="module-icon" style="background: rgba(249, 115, 22, 0.2);">🔒</div>
+                            <h4 class="module-title">Policy Locking</h4>
+                        </div>
+                        <p class="module-desc">Once a policy is active and assigned, the tracking unit (hours/days) becomes locked to maintain data integrity.</p>
+                        <div class="module-features">
+                            <span class="module-feature">Locked when active</span>
+                            <span class="module-feature">Prevents unit change</span>
+                            <span class="module-feature">Data integrity</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module-category">
+                <h3 class="category-title">💰 2. Payroll Export Settings</h3>
+                <div class="module-grid">
+                    <div class="module-card" style="--card-color: #22c55e;">
+                        <div class="module-header">
+                            <div class="module-icon" style="background: rgba(34, 197, 94, 0.2);">📤</div>
+                            <h4 class="module-title">Export Configuration</h4>
+                        </div>
+                        <p class="module-desc">Configure how leave data integrates with your payroll system for seamless processing.</p>
+                        <div class="module-features">
+                            <span class="module-feature">Pay Condition Mapping</span>
+                            <span class="module-feature">Custom Export Code</span>
+                            <span class="module-feature">Payroll Integration</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module-category">
+                <h3 class="category-title">📈 3. Leave Accrual Options</h3>
+                <div class="tech-card" style="margin-bottom: 20px;">
+                    <p style="color: var(--text-secondary); margin-bottom: 20px;">Choose how employees earn their leave entitlement. New policies default to "Does not accrue" until configured.</p>
+                </div>
+                <div class="module-grid">
+                    <div class="module-card" style="--card-color: #64748b;">
+                        <div class="module-header">
+                            <div class="module-icon" style="background: rgba(100, 116, 139, 0.2);">🚫</div>
+                            <h4 class="module-title">A) Does Not Accrue</h4>
+                        </div>
+                        <p class="module-desc">Leave balance is manually managed or granted upfront without automatic accrual.</p>
+                        <div class="module-features">
+                            <span class="module-feature">Manual balance</span>
+                            <span class="module-feature">Option: Prevent deduction</span>
+                            <span class="module-feature">Static entitlement</span>
+                        </div>
+                    </div>
+                    
+                    <div class="module-card" style="--card-color: #06b6d4;">
+                        <div class="module-header">
+                            <div class="module-icon" style="background: rgba(6, 182, 212, 0.2);">⏱️</div>
+                            <h4 class="module-title">B) Hourly Worked</h4>
+                        </div>
+                        <p class="module-desc">Employees earn leave based on hours worked - either per hour or after reaching a threshold.</p>
+                        <div class="module-features">
+                            <span class="module-feature">Per hour worked</span>
+                            <span class="module-feature">Per threshold worked</span>
+                            <span class="module-feature">Straight hours or %</span>
+                            <span class="module-feature">Include/Exclude OT</span>
+                            <span class="module-feature">Tenure-based rules</span>
+                        </div>
+                    </div>
+                    
+                    <div class="module-card" style="--card-color: #8b5cf6;">
+                        <div class="module-header">
+                            <div class="module-icon" style="background: rgba(139, 92, 246, 0.2);">📅</div>
+                            <h4 class="module-title">C) Fixed Accrual</h4>
+                        </div>
+                        <p class="module-desc">Release a fixed amount of leave on a regular schedule regardless of hours worked.</p>
+                        <div class="module-features">
+                            <span class="module-feature">Weekly / Monthly</span>
+                            <span class="module-feature">Quarterly / Yearly</span>
+                            <span class="module-feature">Specific date release</span>
+                            <span class="module-feature">Hire date release</span>
+                            <span class="module-feature">Pro-rata for joiners</span>
+                            <span class="module-feature">Tenure-based rules</span>
+                        </div>
+                    </div>
+                    
+                    <div class="module-card" style="--card-color: #ec4899;">
+                        <div class="module-header">
+                            <div class="module-icon" style="background: rgba(236, 72, 153, 0.2);">📊</div>
+                            <h4 class="module-title">D) Regular Hours Based</h4>
+                        </div>
+                        <p class="module-desc">Calculate entitlement based on contracted working hours - ideal for part-time staff.</p>
+                        <div class="module-features">
+                            <span class="module-feature">Working days calc</span>
+                            <span class="module-feature">Working weeks calc</span>
+                            <span class="module-feature">Full-time entitlement</span>
+                            <span class="module-feature">Annual release date</span>
+                            <span class="module-feature">Pro-rata for joiners</span>
+                            <span class="module-feature">Tenure-based rules</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module-category">
+                <h3 class="category-title">⚖️ 4. Leave Balance Options</h3>
+                <div class="module-grid">
+                    <div class="module-card" style="--card-color: #eab308;">
+                        <div class="module-header">
+                            <div class="module-icon" style="background: rgba(234, 179, 8, 0.2);">📊</div>
+                            <h4 class="module-title">Balance Caps</h4>
+                        </div>
+                        <p class="module-desc">Set limits on how much leave can be earned or held at any time.</p>
+                        <div class="module-features">
+                            <span class="module-feature">Max yearly accrual</span>
+                            <span class="module-feature">Resets Jan 1</span>
+                            <span class="module-feature">Max balance cap</span>
+                            <span class="module-feature">Prevents over-accrual</span>
+                        </div>
+                    </div>
+                    
+                    <div class="module-card" style="--card-color: #3b82f6;">
+                        <div class="module-header">
+                            <div class="module-icon" style="background: rgba(59, 130, 246, 0.2);">🔄</div>
+                            <h4 class="module-title">Year-End Handling</h4>
+                        </div>
+                        <p class="module-desc">Configure what happens to unused leave at the end of the leave year.</p>
+                        <div class="module-features">
+                            <span class="module-feature">Rollover entire balance</span>
+                            <span class="module-feature">Rollover portion only</span>
+                            <span class="module-feature">Reset balance to zero</span>
+                            <span class="module-feature">Specific date trigger</span>
+                            <span class="module-feature">Hire date trigger</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module-category">
+                <h3 class="category-title">⚙️ 5. Additional Options</h3>
+                <div class="module-grid">
+                    <div class="module-card" style="--card-color: #14b8a6;">
+                        <div class="module-header">
+                            <div class="module-icon" style="background: rgba(20, 184, 166, 0.2);">📆</div>
+                            <h4 class="module-title">Future Leave Requests</h4>
+                        </div>
+                        <p class="module-desc">Allow employees to request leave from next year's entitlement.</p>
+                        <div class="module-features">
+                            <span class="module-feature">Current year pot</span>
+                            <span class="module-feature">Future year pot</span>
+                            <span class="module-feature">Cross-year booking</span>
+                        </div>
+                    </div>
+                    
+                    <div class="module-card" style="--card-color: #a855f7;">
+                        <div class="module-header">
+                            <div class="module-icon" style="background: rgba(168, 85, 247, 0.2);">🔁</div>
+                            <h4 class="module-title">Accrual While on Leave</h4>
+                        </div>
+                        <p class="module-desc">Configure whether employees continue accruing leave while taking time off.</p>
+                        <div class="module-features">
+                            <span class="module-feature">All leave types</span>
+                            <span class="module-feature">Paid leave only</span>
+                            <span class="module-feature">Unpaid leave only</span>
+                            <span class="module-feature">Specific types</span>
+                        </div>
+                    </div>
+                    
+                    <div class="module-card" style="--card-color: #f43f5e;">
+                        <div class="module-header">
+                            <div class="module-icon" style="background: rgba(244, 63, 94, 0.2);">🧮</div>
+                            <h4 class="module-title">Average Hours Calculation</h4>
+                        </div>
+                        <p class="module-desc">Additional configuration for calculating average working hours for part-time or variable-hour staff.</p>
+                        <div class="module-features">
+                            <span class="module-feature">Rolling average</span>
+                            <span class="module-feature">Reference period</span>
+                            <span class="module-feature">Variable schedules</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Visual Flow Diagram -->
+            <div class="tech-card" style="margin-top: 40px;">
+                <h3 class="tech-card-title" style="margin-bottom: 24px;">🔄 Leave Policy Configuration Flow</h3>
+                <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: center;">
+                    <div style="text-align: center; padding: 16px 20px; background: rgba(139, 92, 246, 0.1); border-radius: 12px; border: 1px solid rgba(139, 92, 246, 0.3); min-width: 120px;">
+                        <div style="font-size: 24px; margin-bottom: 6px;">📝</div>
+                        <div style="font-weight: 600; font-size: 12px;">Policy Basics</div>
+                        <div style="font-size: 10px; color: var(--text-muted);">Name, Paid, Unit</div>
+                    </div>
+                    <div style="font-size: 20px; color: var(--nebula-purple);">→</div>
+                    <div style="text-align: center; padding: 16px 20px; background: rgba(6, 182, 212, 0.1); border-radius: 12px; border: 1px solid rgba(6, 182, 212, 0.3); min-width: 120px;">
+                        <div style="font-size: 24px; margin-bottom: 6px;">📈</div>
+                        <div style="font-weight: 600; font-size: 12px;">Accrual Method</div>
+                        <div style="font-size: 10px; color: var(--text-muted);">How to earn</div>
+                    </div>
+                    <div style="font-size: 20px; color: var(--nebula-purple);">→</div>
+                    <div style="text-align: center; padding: 16px 20px; background: rgba(234, 179, 8, 0.1); border-radius: 12px; border: 1px solid rgba(234, 179, 8, 0.3); min-width: 120px;">
+                        <div style="font-size: 24px; margin-bottom: 6px;">⚖️</div>
+                        <div style="font-weight: 600; font-size: 12px;">Balance Rules</div>
+                        <div style="font-size: 10px; color: var(--text-muted);">Caps & Rollover</div>
+                    </div>
+                    <div style="font-size: 20px; color: var(--nebula-purple);">→</div>
+                    <div style="text-align: center; padding: 16px 20px; background: rgba(34, 197, 94, 0.1); border-radius: 12px; border: 1px solid rgba(34, 197, 94, 0.3); min-width: 120px;">
+                        <div style="font-size: 24px; margin-bottom: 6px;">💰</div>
+                        <div style="font-weight: 600; font-size: 12px;">Payroll Export</div>
+                        <div style="font-size: 10px; color: var(--text-muted);">Integration</div>
+                    </div>
+                    <div style="font-size: 20px; color: var(--nebula-purple);">→</div>
+                    <div style="text-align: center; padding: 16px 20px; background: rgba(236, 72, 153, 0.1); border-radius: 12px; border: 1px solid rgba(236, 72, 153, 0.3); min-width: 120px;">
+                        <div style="font-size: 24px; margin-bottom: 6px;">✅</div>
+                        <div style="font-weight: 600; font-size: 12px;">Assign Policy</div>
+                        <div style="font-size: 10px; color: var(--text-muted);">To employees</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Database Tables for Leave -->
+            <div class="db-section" style="margin-top: 40px;">
+                <h3 class="db-schema-title">🗄️ Leave Module Database Tables <span>Planned Schema</span></h3>
+                <div class="db-tables-grid">
+                    <div class="db-table">
+                        <div class="db-table-header" style="background: rgba(234, 179, 8, 0.1); color: var(--nebula-yellow);">leave_policies</div>
+                        <div class="db-table-body">
+                            <div class="db-field"><span class="db-field-icon">🔑</span><span class="db-field-name">id</span><span class="db-field-type">UUID</span></div>
+                            <div class="db-field"><span class="db-field-icon">📝</span><span class="db-field-name">name</span><span class="db-field-type">VARCHAR</span></div>
+                            <div class="db-field"><span class="db-field-icon">📁</span><span class="db-field-name">policy_group_id</span><span class="db-field-type">FK</span></div>
+                            <div class="db-field"><span class="db-field-icon">💰</span><span class="db-field-name">is_paid</span><span class="db-field-type">BOOL</span></div>
+                            <div class="db-field"><span class="db-field-icon">⏰</span><span class="db-field-name">track_unit</span><span class="db-field-type">ENUM</span></div>
+                            <div class="db-field"><span class="db-field-icon">👁️</span><span class="db-field-name">hidden</span><span class="db-field-type">BOOL</span></div>
+                            <div class="db-field"><span class="db-field-icon">📈</span><span class="db-field-name">accrual_method</span><span class="db-field-type">ENUM</span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="db-table">
+                        <div class="db-table-header" style="background: rgba(234, 179, 8, 0.1); color: var(--nebula-yellow);">leave_accrual_rules</div>
+                        <div class="db-table-body">
+                            <div class="db-field"><span class="db-field-icon">🔑</span><span class="db-field-name">id</span><span class="db-field-type">UUID</span></div>
+                            <div class="db-field"><span class="db-field-icon">🔗</span><span class="db-field-name">policy_id</span><span class="db-field-type">FK</span></div>
+                            <div class="db-field"><span class="db-field-icon">📊</span><span class="db-field-name">accrual_rate</span><span class="db-field-type">DECIMAL</span></div>
+                            <div class="db-field"><span class="db-field-icon">📅</span><span class="db-field-name">frequency</span><span class="db-field-type">ENUM</span></div>
+                            <div class="db-field"><span class="db-field-icon">⏱️</span><span class="db-field-name">include_overtime</span><span class="db-field-type">BOOL</span></div>
+                            <div class="db-field"><span class="db-field-icon">📆</span><span class="db-field-name">tenure_months</span><span class="db-field-type">INT</span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="db-table">
+                        <div class="db-table-header" style="background: rgba(234, 179, 8, 0.1); color: var(--nebula-yellow);">leave_balance_rules</div>
+                        <div class="db-table-body">
+                            <div class="db-field"><span class="db-field-icon">🔑</span><span class="db-field-name">id</span><span class="db-field-type">UUID</span></div>
+                            <div class="db-field"><span class="db-field-icon">🔗</span><span class="db-field-name">policy_id</span><span class="db-field-type">FK</span></div>
+                            <div class="db-field"><span class="db-field-icon">📊</span><span class="db-field-name">max_yearly_accrual</span><span class="db-field-type">DECIMAL</span></div>
+                            <div class="db-field"><span class="db-field-icon">⚖️</span><span class="db-field-name">max_balance</span><span class="db-field-type">DECIMAL</span></div>
+                            <div class="db-field"><span class="db-field-icon">🔄</span><span class="db-field-name">rollover_type</span><span class="db-field-type">ENUM</span></div>
+                            <div class="db-field"><span class="db-field-icon">📅</span><span class="db-field-name">reset_date</span><span class="db-field-type">DATE</span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="db-table">
+                        <div class="db-table-header" style="background: rgba(234, 179, 8, 0.1); color: var(--nebula-yellow);">employee_leave_balances</div>
+                        <div class="db-table-body">
+                            <div class="db-field"><span class="db-field-icon">🔑</span><span class="db-field-name">id</span><span class="db-field-type">UUID</span></div>
+                            <div class="db-field"><span class="db-field-icon">🔗</span><span class="db-field-name">employee_id</span><span class="db-field-type">FK</span></div>
+                            <div class="db-field"><span class="db-field-icon">🔗</span><span class="db-field-name">policy_id</span><span class="db-field-type">FK</span></div>
+                            <div class="db-field"><span class="db-field-icon">📊</span><span class="db-field-name">current_balance</span><span class="db-field-type">DECIMAL</span></div>
+                            <div class="db-field"><span class="db-field-icon">📊</span><span class="db-field-name">accrued_ytd</span><span class="db-field-type">DECIMAL</span></div>
+                            <div class="db-field"><span class="db-field-icon">📊</span><span class="db-field-name">used_ytd</span><span class="db-field-type">DECIMAL</span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="db-table">
+                        <div class="db-table-header" style="background: rgba(234, 179, 8, 0.1); color: var(--nebula-yellow);">leave_requests</div>
+                        <div class="db-table-body">
+                            <div class="db-field"><span class="db-field-icon">🔑</span><span class="db-field-name">id</span><span class="db-field-type">UUID</span></div>
+                            <div class="db-field"><span class="db-field-icon">🔗</span><span class="db-field-name">employee_id</span><span class="db-field-type">FK</span></div>
+                            <div class="db-field"><span class="db-field-icon">🔗</span><span class="db-field-name">policy_id</span><span class="db-field-type">FK</span></div>
+                            <div class="db-field"><span class="db-field-icon">📅</span><span class="db-field-name">start_date</span><span class="db-field-type">DATE</span></div>
+                            <div class="db-field"><span class="db-field-icon">📅</span><span class="db-field-name">end_date</span><span class="db-field-type">DATE</span></div>
+                            <div class="db-field"><span class="db-field-icon">📊</span><span class="db-field-name">status</span><span class="db-field-type">ENUM</span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="db-table">
+                        <div class="db-table-header" style="background: rgba(234, 179, 8, 0.1); color: var(--nebula-yellow);">leave_policy_groups</div>
+                        <div class="db-table-body">
+                            <div class="db-field"><span class="db-field-icon">🔑</span><span class="db-field-name">id</span><span class="db-field-type">UUID</span></div>
+                            <div class="db-field"><span class="db-field-icon">📝</span><span class="db-field-name">name</span><span class="db-field-type">VARCHAR</span></div>
+                            <div class="db-field"><span class="db-field-icon">📄</span><span class="db-field-name">description</span><span class="db-field-type">TEXT</span></div>
+                            <div class="db-field"><span class="db-field-icon">✓</span><span class="db-field-name">is_active</span><span class="db-field-type">BOOL</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
     
     <footer class="footer">
@@ -1444,6 +2076,94 @@
             node.addEventListener('mouseleave', () => {
                 node.style.transform = '';
             });
+        });
+        
+        // ======= Interactive Mock UI Functions =======
+        
+        // Toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Dropdown toggle
+        function toggleDropdown(dropdown) {
+            // Close other dropdowns first
+            document.querySelectorAll('.mock-dropdown.open').forEach(d => {
+                if (d !== dropdown) d.classList.remove('open');
+            });
+            dropdown.classList.toggle('open');
+        }
+        
+        // Select dropdown item
+        function selectDropdownItem(event, value) {
+            event.stopPropagation();
+            const dropdown = event.target.closest('.mock-dropdown');
+            dropdown.querySelector('.dropdown-value').textContent = value;
+            dropdown.classList.remove('open');
+            showToast('Policy Group: ' + value);
+        }
+        
+        // Toggle button options (Yes/No, Days/Hours)
+        function toggleOption(btn) {
+            const group = btn.closest('.toggle-group');
+            group.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Update balance preview based on selection
+            const trackGroup = document.querySelector('[data-group="track-in"]');
+            if (trackGroup && trackGroup.contains(btn)) {
+                const balancePreview = document.getElementById('balance-preview');
+                if (btn.dataset.value === 'hours') {
+                    balancePreview.textContent = '224 hours';
+                } else {
+                    balancePreview.textContent = '28 days';
+                }
+            }
+            
+            showToast('Selected: ' + btn.textContent.trim());
+        }
+        
+        // Accrual method selection
+        function selectAccrual(btn) {
+            document.querySelectorAll('.accrual-btn').forEach(b => {
+                b.classList.remove('active');
+                b.textContent = b.textContent.replace('✓ ', '');
+            });
+            btn.classList.add('active');
+            btn.textContent = '✓ ' + btn.textContent;
+            
+            // Update balance preview based on accrual method
+            const balancePreview = document.getElementById('balance-preview');
+            const trackInDays = document.querySelector('[data-group="track-in"] .toggle-btn.active')?.dataset.value === 'days';
+            
+            switch(btn.dataset.value) {
+                case 'none':
+                    balancePreview.textContent = trackInDays ? '0 days' : '0 hours';
+                    break;
+                case 'hourly':
+                    balancePreview.textContent = trackInDays ? '~22 days' : '~176 hours';
+                    break;
+                case 'fixed':
+                    balancePreview.textContent = trackInDays ? '28 days' : '224 hours';
+                    break;
+                case 'regular':
+                    balancePreview.textContent = trackInDays ? '25 days' : '200 hours';
+                    break;
+            }
+            
+            showToast('Accrual Method: ' + btn.textContent.replace('✓ ', ''));
+        }
+        
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.mock-dropdown')) {
+                document.querySelectorAll('.mock-dropdown.open').forEach(d => d.classList.remove('open'));
+            }
         });
     </script>
 </body>
