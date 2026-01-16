@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PeoplesHive - App Architecture & Design</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+        :root {
+            --bg-0: #0b1026;
+            --bg-1: #0f1733;
+            --bg-2: #141c3a;
+            --accent-1: #6cf3ff;
+            --accent-2: #a06bff;
+            --accent-3: #00f5a0;
+            --accent-4: #ff6fd8;
+            --text-main: #f4f7ff;
+            --text-muted: #b6c0df;
+            --glass: rgba(15, 20, 40, 0.72);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --shadow-soft: 0 22px 50px rgba(6, 10, 28, 0.55);
+            --shadow-glow: 0 0 45px rgba(108, 243, 255, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background:
+                radial-gradient(1200px 900px at 10% -20%, rgba(160, 107, 255, 0.35), transparent 60%),
+                radial-gradient(1000px 700px at 90% 0%, rgba(108, 243, 255, 0.25), transparent 55%),
+                linear-gradient(135deg, var(--bg-0) 0%, var(--bg-1) 50%, var(--bg-2) 100%);
+            min-height: 100vh;
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: -200px;
+            background-image:
+                radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.7), transparent 60%),
+                radial-gradient(1px 1px at 80px 50px, rgba(255, 255, 255, 0.55), transparent 60%),
+                radial-gradient(1.5px 1.5px at 140px 120px, rgba(255, 255, 255, 0.4), transparent 60%),
+                radial-gradient(1px 1px at 40px 110px, rgba(255, 255, 255, 0.6), transparent 60%),
+                radial-gradient(2px 2px at 160px 70px, rgba(255, 255, 255, 0.5), transparent 60%),
+                radial-gradient(1px 1px at 110px 160px, rgba(255, 255, 255, 0.45), transparent 60%);
+            background-size: 180px 180px;
+            opacity: 0.5;
+            animation: starDrift 60s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            inset: -40% -20% -30% -20%;
+            background:
+                radial-gradient(400px 300px at 20% 30%, rgba(255, 111, 216, 0.25), transparent 70%),
+                radial-gradient(500px 320px at 80% 20%, rgba(0, 245, 160, 0.2), transparent 70%),
+                radial-gradient(420px 420px at 70% 80%, rgba(160, 107, 255, 0.2), transparent 70%);
+            filter: blur(10px);
+            animation: nebulaPulse 18s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .nebula {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .nebula-blob {
+            position: absolute;
+            border-radius: 999px;
+            filter: blur(80px);
+            opacity: 0.7;
+            mix-blend-mode: screen;
+            animation: float 16s ease-in-out infinite;
+        }
+
+        .nebula-blob.blob-1 {
+            width: 420px;
+            height: 420px;
+            background: rgba(108, 243, 255, 0.35);
+            top: 5%;
+            left: 8%;
+        }
+
+        .nebula-blob.blob-2 {
+            width: 520px;
+            height: 520px;
+            background: rgba(160, 107, 255, 0.35);
+            top: 20%;
+            right: 5%;
+            animation-delay: -4s;
+        }
+
+        .nebula-blob.blob-3 {
+            width: 460px;
+            height: 460px;
+            background: rgba(0, 245, 160, 0.25);
+            bottom: 10%;
+            left: 20%;
+            animation-delay: -8s;
+        }
+
+        .nebula-blob.blob-4 {
+            width: 380px;
+            height: 380px;
+            background: rgba(255, 111, 216, 0.25);
+            bottom: 20%;
+            right: 18%;
+            animation-delay: -12s;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: var(--glass);
+            border-radius: 24px;
+            padding: 32px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-soft);
+            backdrop-filter: blur(16px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            inset: -40% 10% 40% 10%;
+            background: radial-gradient(circle, rgba(108, 243, 255, 0.3), transparent 60%);
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .header h1 {
+            font-size: clamp(2.2rem, 3vw, 3.4rem);
+            background: linear-gradient(135deg, #ffffff 0%, #9de6ff 50%, #b89bff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+            letter-spacing: 0.02em;
+            text-shadow: 0 0 20px rgba(157, 230, 255, 0.35);
+        }
+
+        .header .subtitle {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .header .meta {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            background: rgba(255, 255, 255, 0.06);
+            padding: 10px 18px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            font-weight: 600;
+            color: #d9e7ff;
+            box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.05);
+        }
+
+        .tech-stack,
+        .architecture-section,
+        .database-schema,
+        .connections-section,
+        .roles-section,
+        .modules-box {
+            background: var(--glass);
+            border-radius: 22px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-soft);
+            backdrop-filter: blur(16px);
+        }
+
+        .tech-stack h2,
+        .architecture-section h2,
+        .database-schema h2,
+        .connections-section h2,
+        .roles-section h2,
+        .modules-box h2,
+        .uk-features h2 {
+            color: #ffffff;
+            margin-bottom: 25px;
+            font-size: clamp(1.6rem, 2vw, 2.2rem);
+            text-align: center;
+            position: relative;
+            letter-spacing: 0.02em;
+        }
+
+        .tech-stack h2::after,
+        .architecture-section h2::after,
+        .database-schema h2::after,
+        .connections-section h2::after,
+        .roles-section h2::after,
+        .modules-box h2::after,
+        .uk-features h2::after {
+            content: "";
+            display: block;
+            width: 90px;
+            height: 3px;
+            margin: 14px auto 0;
+            background: linear-gradient(90deg, transparent, var(--accent-1), transparent);
+            border-radius: 999px;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 22px;
+        }
+
+        .tech-category {
+            background: linear-gradient(140deg, rgba(108, 243, 255, 0.15), rgba(160, 107, 255, 0.15));
+            color: #ffffff;
+            padding: 20px;
+            border-radius: 16px;
+            transition: transform 0.35s ease, box-shadow 0.35s ease;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 14px 30px rgba(6, 10, 28, 0.45);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tech-category::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at top, rgba(255, 255, 255, 0.18), transparent 65%);
+            opacity: 0;
+            transition: opacity 0.35s ease;
+        }
+
+        .tech-category:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 18px 40px rgba(108, 243, 255, 0.2);
+        }
+
+        .tech-category:hover::before {
+            opacity: 1;
+        }
+
+        .tech-category h3 {
+            font-size: 1.2rem;
+            margin-bottom: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 10px;
+        }
+
+        .tech-item {
+            background: rgba(255, 255, 255, 0.08);
+            margin: 8px 0;
+            padding: 9px 12px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: #eaf0ff;
+        }
+
+        .architecture-section {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .diagram-orbits {
+            position: absolute;
+            inset: -40% -20%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .diagram-orbits .orbit {
+            position: absolute;
+            border: 1px solid rgba(108, 243, 255, 0.2);
+            border-radius: 50%;
+            animation: orbitSpin 18s linear infinite;
+        }
+
+        .diagram-orbits .orbit-1 {
+            width: 520px;
+            height: 520px;
+            top: 15%;
+            left: 10%;
+        }
+
+        .diagram-orbits .orbit-2 {
+            width: 680px;
+            height: 680px;
+            top: -10%;
+            right: 5%;
+            animation-duration: 26s;
+        }
+
+        .diagram-orbits .orbit-3 {
+            width: 460px;
+            height: 460px;
+            bottom: -5%;
+            left: 40%;
+            animation-duration: 22s;
+            animation-direction: reverse;
+        }
+
+        .architecture-diagram {
+            display: grid;
+            grid-template-areas:
+                "frontend frontend"
+                "api tenant"
+                "database database";
+            gap: 22px;
+            margin-top: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .architecture-diagram::before {
+            content: "";
+            position: absolute;
+            inset: 20px;
+            background:
+                linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+                linear-gradient(180deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+            background-size: 120px 120px;
+            opacity: 0.4;
+            mask: radial-gradient(circle at 50% 50%, #000 40%, transparent 75%);
+            pointer-events: none;
+        }
+
+        .arch-box {
+            padding: 26px;
+            border-radius: 18px;
+            text-align: center;
+            transition: transform 0.35s ease, box-shadow 0.35s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            position: relative;
+            overflow: hidden;
+            animation: float 10s ease-in-out infinite;
+            box-shadow: 0 15px 35px rgba(6, 10, 28, 0.45);
+        }
+
+        .arch-box::after {
+            content: "";
+            position: absolute;
+            inset: -2px;
+            border-radius: 20px;
+            box-shadow: 0 0 35px rgba(108, 243, 255, 0.25);
+            opacity: 0;
+            transition: opacity 0.35s ease;
+        }
+
+        .arch-box:hover {
+            transform: translateY(-6px) scale(1.01);
+        }
+
+        .arch-box:hover::after {
+            opacity: 1;
+        }
+
+        .arch-box:nth-child(2) {
+            animation-delay: -2s;
+        }
+
+        .arch-box:nth-child(3) {
+            animation-delay: -4s;
+        }
+
+        .arch-box:nth-child(4) {
+            animation-delay: -6s;
+        }
+
+        .frontend-layer {
+            grid-area: frontend;
+            background: linear-gradient(135deg, rgba(79, 172, 254, 0.9), rgba(0, 242, 254, 0.9));
+            color: white;
+        }
+
+        .api-layer {
+            grid-area: api;
+            background: linear-gradient(135deg, rgba(67, 233, 123, 0.9), rgba(56, 249, 215, 0.9));
+            color: white;
+        }
+
+        .tenant-layer {
+            grid-area: tenant;
+            background: linear-gradient(135deg, rgba(250, 112, 154, 0.9), rgba(254, 225, 64, 0.9));
+            color: #1f1f1f;
+        }
+
+        .database-layer {
+            grid-area: database;
+            background: linear-gradient(135deg, rgba(108, 243, 255, 0.35), rgba(160, 107, 255, 0.65));
+            color: white;
+        }
+
+        .modules-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .module-item {
+            background: rgba(255, 255, 255, 0.08);
+            color: #f1f5ff;
+            padding: 14px 16px;
+            border-radius: 12px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(8px);
+        }
+
+        .module-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 25px rgba(108, 243, 255, 0.2);
+        }
+
+        .database-schema {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .schema-diagram {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 26px;
+            margin-top: 20px;
+        }
+
+        .schema-box {
+            padding: 22px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 16px 35px rgba(6, 10, 28, 0.4);
+        }
+
+        .public-schema {
+            background: linear-gradient(135deg, rgba(255, 236, 210, 0.2), rgba(252, 182, 159, 0.25));
+        }
+
+        .tenant-schema {
+            background: linear-gradient(135deg, rgba(168, 237, 234, 0.25), rgba(254, 214, 227, 0.2));
+        }
+
+        .schema-table {
+            background: rgba(255, 255, 255, 0.08);
+            margin: 10px 0;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border-left: 3px solid rgba(108, 243, 255, 0.8);
+            color: #f6f8ff;
+        }
+
+        .connections-section {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .connection-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 18px 0;
+            flex-wrap: wrap;
+            gap: 14px;
+            position: relative;
+            padding: 10px 0;
+        }
+
+        .connection-flow::after {
+            content: "";
+            position: absolute;
+            left: 8%;
+            right: 8%;
+            top: 50%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(108, 243, 255, 0.6), transparent);
+            opacity: 0.4;
+        }
+
+        .connection-flow::before {
+            content: "";
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(108, 243, 255, 0.9);
+            top: calc(50% - 5px);
+            left: 10%;
+            animation: flowDot 6s linear infinite;
+        }
+
+        .flow-item {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 999px;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 20px rgba(6, 10, 28, 0.35);
+            z-index: 1;
+        }
+
+        .flow-arrow {
+            font-size: 1.5rem;
+            color: rgba(108, 243, 255, 0.85);
+            font-weight: bold;
+            z-index: 1;
+        }
+
+        .roles-hierarchy {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .role-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            background: linear-gradient(135deg, rgba(108, 243, 255, 0.2), rgba(160, 107, 255, 0.25));
+            color: #f4f7ff;
+            border-radius: 12px;
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+        }
+
+        .role-item:hover {
+            transform: translateX(8px);
+        }
+
+        .role-level {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 10px;
+            border-radius: 999px;
+            margin-right: 15px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .uk-features {
+            background: linear-gradient(135deg, rgba(15, 20, 40, 0.85), rgba(20, 24, 46, 0.85));
+            color: white;
+            border-radius: 22px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: var(--shadow-soft);
+            backdrop-filter: blur(16px);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .feature-item {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            box-shadow: 0 10px 24px rgba(6, 10, 28, 0.35);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 120%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(8, 12, 28, 0.9);
+            color: #ffffff;
+            padding: 6px 12px;
+            border-radius: 8px;
+            white-space: nowrap;
+            z-index: 1000;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .interactive-btn {
+            background: linear-gradient(135deg, rgba(108, 243, 255, 0.2), rgba(160, 107, 255, 0.4));
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px 26px;
+            border-radius: 999px;
+            cursor: pointer;
+            margin: 10px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+
+        .interactive-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(108, 243, 255, 0.25);
+        }
+
+        @media (max-width: 960px) {
+            .modules-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .schema-diagram {
+                grid-template-columns: 1fr;
+            }
+
+            .architecture-diagram {
+                grid-template-areas:
+                    "frontend"
+                    "api"
+                    "tenant"
+                    "database";
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2.1rem;
+            }
+
+            .header .meta {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+
+        @keyframes starDrift {
+            from {
+                transform: translateY(0);
+            }
+            to {
+                transform: translateY(-200px);
+            }
+        }
+
+        @keyframes nebulaPulse {
+            0%,
+            100% {
+                opacity: 0.75;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes float {
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-12px);
+            }
+        }
+
+        @keyframes orbitSpin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes flowDot {
+            0% {
+                left: 8%;
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                left: 92%;
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="nebula" aria-hidden="true">
+        <span class="nebula-blob blob-1"></span>
+        <span class="nebula-blob blob-2"></span>
+        <span class="nebula-blob blob-3"></span>
+        <span class="nebula-blob blob-4"></span>
+    </div>
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header">
+            <h1>🏢 PeoplesHive</h1>
+            <div class="subtitle">UK-Based Restaurant HRM System</div>
+            <div class="meta">
+                <div class="meta-item">Multi-Tenant Architecture</div>
+                <div class="meta-item">Schema-per-Tenant</div>
+                <div class="meta-item">NestJS + Next.js 14</div>
+                <div class="meta-item">UK Localized</div>
+            </div>
+        </div>
+
+        <!-- Technology Stack -->
+        <div class="tech-stack">
+            <h2>🛠️ Technology Stack</h2>
+            <div class="tech-grid">
+                <div class="tech-category">
+                    <h3>Backend (NestJS)</h3>
+                    <div class="tech-item">🚀 NestJS Framework</div>
+                    <div class="tech-item">🔷 TypeScript</div>
+                    <div class="tech-item">🐘 PostgreSQL Database</div>
+                    <div class="tech-item">🔧 Prisma ORM</div>
+                    <div class="tech-item">🛡️ Helmet Security</div>
+                    <div class="tech-item">🔑 JWT Authentication</div>
+                    <div class="tech-item">📧 NodeMailer</div>
+                    <div class="tech-item">⚡ Rate Limiting</div>
+                </div>
+                
+                <div class="tech-category">
+                    <h3>Frontend (Next.js)</h3>
+                    <div class="tech-item">⚛️ Next.js 14</div>
+                    <div class="tech-item">🔷 TypeScript</div>
+                    <div class="tech-item">🎨 Tailwind CSS</div>
+                    <div class="tech-item">🐻 Zustand State Management</div>
+                    <div class="tech-item">📝 React Hook Form</div>
+                    <div class="tech-item">✅ Zod Validation</div>
+                    <div class="tech-item">🌐 Axios HTTP Client</div>
+                    <div class="tech-item">🎭 Ant Design Components</div>
+                </div>
+                
+                <div class="tech-category">
+                    <h3>Architecture</h3>
+                    <div class="tech-item">🏗️ Multi-Tenant</div>
+                    <div class="tech-item">📊 Schema-per-Tenant</div>
+                    <div class="tech-item">🔒 Role-Based Access</div>
+                    <div class="tech-item">🏪 Organization Isolation</div>
+                    <div class="tech-item">🔄 Auto Schema Creation</div>
+                    <div class="tech-item">🌍 UK Localization</div>
+                    <div class="tech-item">📱 Responsive Design</div>
+                    <div class="tech-item">⚡ Real-time Updates</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Application Architecture -->
+        <div class="architecture-section">
+            <h2>🏗️ Application Architecture</h2>
+            <div class="diagram-orbits" aria-hidden="true">
+                <span class="orbit orbit-1"></span>
+                <span class="orbit orbit-2"></span>
+                <span class="orbit orbit-3"></span>
+            </div>
+            <div class="architecture-diagram">
+                <div class="arch-box frontend-layer" onclick="showDetails('frontend')">
+                    <h3>Frontend Layer</h3>
+                    <p>Next.js 14 • TypeScript • Tailwind CSS</p>
+                    <p>Management Portal • Employee Portal • Auth Pages • Kiosk Interface</p>
+                </div>
+                
+                <div class="arch-box api-layer" onclick="showDetails('api')">
+                    <h3>API Layer</h3>
+                    <p>NestJS • REST APIs • JWT Auth</p>
+                    <p>Rate Limiting • Validation • Error Handling</p>
+                </div>
+                
+                <div class="arch-box tenant-layer" onclick="showDetails('tenant')">
+                    <h3>Tenant Layer</h3>
+                    <p>Multi-Tenant Infrastructure</p>
+                    <p>Schema Switching • Isolation • Context</p>
+                </div>
+                
+                <div class="arch-box database-layer" onclick="showDetails('database')">
+                    <h3>Database Layer</h3>
+                    <p>PostgreSQL • Prisma ORM • Multi-Schema</p>
+                    <p>Public Schema (Platform) • Tenant Schemas (Organizations)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Database Schema Design -->
+        <div class="database-schema">
+            <h2>🗄️ Database Schema Design</h2>
+            <div class="schema-diagram">
+                <div class="schema-box public-schema">
+                    <h3>📊 Public Schema (Platform Level)</h3>
+                    <div class="schema-table">
+                        <strong>Organizations</strong><br>
+                        <small>Restaurant chains/companies</small>
+                    </div>
+                    <div class="schema-table">
+                        <strong>Branches</strong><br>
+                        <small>Restaurant locations with UK addresses</small>
+                    </div>
+                    <div class="schema-table">
+                        <strong>TenantSchemas</strong><br>
+                        <small>Track tenant schema mappings</small>
+                    </div>
+                </div>
+                
+                <div class="schema-box tenant-schema">
+                    <h3>👥 Tenant Schema (Per Organization)</h3>
+                    <div class="schema-table">
+                        <strong>Users</strong> - Staff accounts with roles
+                    </div>
+                    <div class="schema-table">
+                        <strong>Employees</strong> - Employee profiles & records
+                    </div>
+                    <div class="schema-table">
+                        <strong>Departments</strong> - Organizational structure
+                    </div>
+                    <div class="schema-table">
+                        <strong>Schedules</strong> - Work schedules & shifts
+                    </div>
+                    <div class="schema-table">
+                        <strong>Timesheets</strong> - Time tracking & payroll
+                    </div>
+                    <div class="schema-table">
+                        <strong>Announcements</strong> - Company communications
+                    </div>
+                    <div class="schema-table">
+                        <strong>Availability</strong> - Employee availability
+                    </div>
+                    <div class="schema-table">
+                        <strong>Documents</strong> - HR documents & contracts
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modules Section -->
+        <div class="modules-section">
+            <div class="modules-box">
+                <h2>🎛️ Backend Modules</h2>
+                <div class="modules-grid">
+                    <div class="module-item" onclick="showModuleDetails('auth')">🔐 Authentication</div>
+                    <div class="module-item" onclick="showModuleDetails('users')">👥 Users</div>
+                    <div class="module-item" onclick="showModuleDetails('organization')">🏢 Organization</div>
+                    <div class="module-item" onclick="showModuleDetails('employees')">👨‍💼 Employees</div>
+                    <div class="module-item" onclick="showModuleDetails('tenant')">🏗️ Multi-Tenant</div>
+                    <div class="module-item" onclick="showModuleDetails('schedule')">📅 Schedule</div>
+                    <div class="module-item" onclick="showModuleDetails('timesheet')">⏰ Timesheet</div>
+                    <div class="module-item" onclick="showModuleDetails('payroll')">💰 Payroll</div>
+                    <div class="module-item" onclick="showModuleDetails('announcements')">📢 Announcements</div>
+                    <div class="module-item" onclick="showModuleDetails('availability')">📊 Availability</div>
+                    <div class="module-item" onclick="showModuleDetails('documents')">📄 Documents</div>
+                    <div class="module-item" onclick="showModuleDetails('notifications')">🔔 Notifications</div>
+                    <div class="module-item" onclick="showModuleDetails('audit-log')">📝 Audit Log</div>
+                    <div class="module-item" onclick="showModuleDetails('kiosk')">🖥️ Kiosk</div>
+                    <div class="module-item" onclick="showModuleDetails('onboarding')">🎯 Onboarding</div>
+                    <div class="module-item" onclick="showModuleDetails('settings')">⚙️ Settings</div>
+                </div>
+            </div>
+            
+            <div class="modules-box">
+                <h2>🖥️ Frontend Modules</h2>
+                <div class="modules-grid">
+                    <div class="module-item" onclick="showModuleDetails('auth-pages')">🔑 Auth Pages</div>
+                    <div class="module-item" onclick="showModuleDetails('management')">👑 Management Portal</div>
+                    <div class="module-item" onclick="showModuleDetails('employee-portal')">👨‍💼 Employee Portal</div>
+                    <div class="module-item" onclick="showModuleDetails('dashboard')">📊 Dashboard</div>
+                    <div class="module-item" onclick="showModuleDetails('user-management')">👥 User Management</div>
+                    <div class="module-item" onclick="showModuleDetails('branch-management')">🏪 Branch Management</div>
+                    <div class="module-item" onclick="showModuleDetails('employee-management')">👨‍💼 Employee Mgmt</div>
+                    <div class="module-item" onclick="showModuleDetails('schedule-ui')">📅 Schedule UI</div>
+                    <div class="module-item" onclick="showModuleDetails('timesheet-ui')">⏰ Timesheet UI</div>
+                    <div class="module-item" onclick="showModuleDetails('kiosk-ui')">🖥️ Kiosk Interface</div>
+                    <div class="module-item" onclick="showModuleDetails('announcements-ui')">📢 Announcements UI</div>
+                    <div class="module-item" onclick="showModuleDetails('documents-ui')">📄 Documents UI</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module Connections -->
+        <div class="connections-section">
+            <h2>🔗 Module Connections & Data Flow</h2>
+            
+            <div class="connection-flow">
+                <div class="flow-item">Authentication</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item">Tenant Context</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item">Role-Based Access</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item">Module Access</div>
+            </div>
+            
+            <div class="connection-flow">
+                <div class="flow-item">Organization</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item">Branches</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item">Employees</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item">Schedules</div>
+            </div>
+            
+            <div class="connection-flow">
+                <div class="flow-item">Employee</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item">Availability</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item">Schedule</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item">Timesheet</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item">Payroll</div>
+            </div>
+            
+            <div class="connection-flow">
+                <div class="flow-item">HR Manager</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item">Announcements</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item">Notifications</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item">All Employees</div>
+            </div>
+        </div>
+
+        <!-- User Roles Hierarchy -->
+        <div class="roles-section">
+            <h2>👑 User Roles Hierarchy</h2>
+            <div class="roles-hierarchy">
+                <div class="role-item">
+                    <div class="role-level">1</div>
+                    <div>
+                        <strong>SUPER_ADMIN</strong> - Platform owner, manages all organizations
+                    </div>
+                </div>
+                <div class="role-item">
+                    <div class="role-level">2</div>
+                    <div>
+                        <strong>ADMIN</strong> - Full organization access, manages everything
+                    </div>
+                </div>
+                <div class="role-item">
+                    <div class="role-level">3</div>
+                    <div>
+                        <strong>HR</strong> - User management, employee records, documents
+                    </div>
+                </div>
+                <div class="role-item">
+                    <div class="role-level">4</div>
+                    <div>
+                        <strong>AREA_MANAGER</strong> - Multiple branch oversight and management
+                    </div>
+                </div>
+                <div class="role-item">
+                    <div class="role-level">5</div>
+                    <div>
+                        <strong>LOCATION_MANAGER</strong> - Single branch management and operations
+                    </div>
+                </div>
+                <div class="role-item">
+                    <div class="role-level">6</div>
+                    <div>
+                        <strong>ACCOUNTANT</strong> - Financial data access, payroll, reports
+                    </div>
+                </div>
+                <div class="role-item">
+                    <div class="role-level">7</div>
+                    <div>
+                        <strong>SHIFT_MANAGER</strong> - Shift management, scheduling, timesheets
+                    </div>
+                </div>
+                <div class="role-item">
+                    <div class="role-level">8</div>
+                    <div>
+                        <strong>EMPLOYEE</strong> - Basic access, view own data, clock in/out
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- UK-Specific Features -->
+        <div class="uk-features">
+            <h2>🇬🇧 UK-Specific Features</h2>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">🕐</div>
+                    <h3>Timezone</h3>
+                    <p>Europe/London<br>BST/GMT Handling</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">📅</div>
+                    <h3>Date Format</h3>
+                    <p>DD/MM/YYYY<br>UK Standard</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">📱</div>
+                    <h3>Phone Numbers</h3>
+                    <p>UK Format Validation<br>+44 Country Code</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">📍</div>
+                    <h3>Postcodes</h3>
+                    <p>UK Postcode Validation<br>SW1A 1AA Format</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">💷</div>
+                    <h3>Currency</h3>
+                    <p>GBP (£)<br>British Pounds</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🏪</div>
+                    <h3>Restaurant Focus</h3>
+                    <p>UK Restaurant Industry<br>Specialized Features</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Controls -->
+        <div style="text-align: center; margin: 30px 0;">
+            <button class="interactive-btn" onclick="highlightTechStack()">Highlight Tech Stack</button>
+            <button class="interactive-btn" onclick="showDataFlow()">Show Data Flow</button>
+            <button class="interactive-btn" onclick="resetHighlights()">Reset View</button>
+        </div>
+    </div>
+
+    <script>
+        // Interactive functionality
+        function showDetails(layer) {
+            const details = {
+                'frontend': 'Frontend built with Next.js 14, TypeScript, and Tailwind CSS. Features management portal, employee portal, authentication pages, and kiosk interface for restaurants.',
+                'api': 'RESTful API built with NestJS framework. Includes authentication, rate limiting, input validation, error handling, and comprehensive endpoint coverage.',
+                'tenant': 'Multi-tenant infrastructure with schema-per-tenant isolation. Automatic tenant context switching, schema creation, and complete data separation.',
+                'database': 'PostgreSQL database with Prisma ORM. Public schema for platform data, separate tenant schemas for each organization ensuring complete isolation.'
+            };
+            
+            alert(details[layer] || 'No details available');
+        }
+
+        function showModuleDetails(module) {
+            const moduleDetails = {
+                'auth': 'JWT authentication with refresh tokens, Google OAuth2, password hashing, rate limiting, and session management.',
+                'users': 'Complete user management with role-based access, email invitations, password management, and branch assignments.',
+                'organization': 'Organization and branch management with UK-specific validation for postcodes and phone numbers.',
+                'employees': 'Comprehensive employee records management with onboarding, profiles, and HR workflows.',
+                'tenant': 'Multi-tenant infrastructure ensuring complete data isolation between organizations.',
+                'schedule': 'Advanced scheduling system with shift patterns, availability matching, and conflict resolution.',
+                'timesheet': 'Time tracking with clock in/out, break management, and payroll integration.',
+                'payroll': 'Payroll processing with UK tax calculations, salary structures, and reporting.',
+                'announcements': 'Company-wide communication system with targeted messaging and acknowledgments.',
+                'availability': 'Employee availability management with approval workflows and schedule integration.',
+                'documents': 'HR document management with templates, e-signatures, and compliance tracking.',
+                'notifications': 'Real-time notification system for alerts, reminders, and updates.',
+                'audit-log': 'Comprehensive audit logging for security, compliance, and change tracking.',
+                'kiosk': 'Self-service kiosk interface for employee clock in/out and information access.',
+                'onboarding': 'Structured employee onboarding process with task management and progress tracking.',
+                'settings': 'System configuration and customization options for organizations and branches.',
+                'management': 'Comprehensive management portal with dashboards, user management, and administrative tools.',
+                'employee-portal': 'Employee self-service portal for viewing schedules, submitting requests, and accessing information.'
+            };
+            
+            alert(moduleDetails[module] || 'Module details not available');
+        }
+
+        function highlightTechStack() {
+            document.querySelectorAll('.tech-category').forEach(el => {
+                el.style.transform = 'scale(1.05)';
+                el.style.boxShadow = '0 20px 50px rgba(102, 126, 234, 0.5)';
+            });
+            
+            setTimeout(() => {
+                document.querySelectorAll('.tech-category').forEach(el => {
+                    el.style.transform = '';
+                    el.style.boxShadow = '';
+                });
+            }, 2000);
+        }
+
+        function showDataFlow() {
+            document.querySelectorAll('.connection-flow').forEach((flow, index) => {
+                setTimeout(() => {
+                    flow.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
+                    flow.style.padding = '20px';
+                    flow.style.borderRadius = '15px';
+                    flow.style.margin = '10px 0';
+                    
+                    setTimeout(() => {
+                        flow.style.background = '';
+                        flow.style.padding = '';
+                        flow.style.borderRadius = '';
+                        flow.style.margin = '20px 0';
+                    }, 1500);
+                }, index * 300);
+            });
+        }
+
+        function resetHighlights() {
+            document.querySelectorAll('*').forEach(el => {
+                el.style.transform = '';
+                el.style.boxShadow = '';
+                el.style.background = '';
+                el.style.padding = '';
+                el.style.borderRadius = '';
+            });
+        }
+
+        // Add some interactive animations on page load
+        window.addEventListener('load', () => {
+            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                return;
+            }
+
+            document.querySelectorAll('.tech-category, .arch-box, .module-item').forEach((el, index) => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(30px)';
+                el.style.transition = 'all 0.6s ease';
+
+                const delay = index * 100;
+                setTimeout(() => {
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                }, delay);
+
+                setTimeout(() => {
+                    el.style.transform = '';
+                }, delay + 700);
+            });
+        });
+
+        // Add hover effects for module items
+        document.querySelectorAll('.module-item').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.background = 'linear-gradient(135deg, #764ba2, #667eea)';
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                this.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
+            });
+        });
+    </script>
+</body>
+</html>

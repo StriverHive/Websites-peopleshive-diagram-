@@ -1,0 +1,818 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PeoplesHive Architecture Map</title>
+    <style>
+      :root {
+        --bg: #0b1020;
+        --bg-deep: #060914;
+        --surface: rgba(15, 23, 42, 0.76);
+        --surface-strong: rgba(15, 23, 42, 0.92);
+        --border: rgba(148, 163, 184, 0.2);
+        --text: #e2e8f0;
+        --muted: #94a3b8;
+        --primary: #7c3aed;
+        --primary-soft: rgba(124, 58, 237, 0.22);
+        --accent: #22d3ee;
+        --success: #22c55e;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+        color: var(--text);
+        background: radial-gradient(1200px 800px at 10% -10%, #1e1b4b 0%, transparent 60%),
+          radial-gradient(900px 700px at 110% 20%, #0f172a 0%, transparent 60%),
+          linear-gradient(180deg, var(--bg) 0%, var(--bg-deep) 100%);
+        min-height: 100vh;
+      }
+
+      #starfield {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      .nebula {
+        position: fixed;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        background:
+          radial-gradient(600px 500px at 20% 30%, rgba(34, 211, 238, 0.12), transparent 70%),
+          radial-gradient(700px 500px at 80% 20%, rgba(124, 58, 237, 0.15), transparent 70%),
+          radial-gradient(500px 400px at 70% 80%, rgba(34, 197, 94, 0.1), transparent 70%);
+        mix-blend-mode: screen;
+        opacity: 0.75;
+      }
+
+      .page {
+        position: relative;
+        z-index: 2;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 56px 24px 80px;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 32px;
+        align-items: center;
+        margin-bottom: 40px;
+      }
+
+      .hero h1 {
+        margin: 0 0 12px;
+        font-size: 42px;
+        line-height: 1.1;
+        letter-spacing: -0.8px;
+        background: linear-gradient(90deg, #e2e8f0 0%, #c4b5fd 40%, #67e8f9 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .hero p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 16px;
+        line-height: 1.6;
+      }
+
+      .hero-card {
+        padding: 18px 20px;
+        border-radius: 16px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        box-shadow: 0 10px 40px rgba(8, 12, 28, 0.6);
+      }
+
+      .hero-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-top: 18px;
+      }
+
+      .stat {
+        background: rgba(15, 23, 42, 0.55);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        padding: 12px;
+        border-radius: 12px;
+      }
+
+      .stat .label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: var(--muted);
+        margin-bottom: 6px;
+        font-weight: 700;
+      }
+
+      .stat .value {
+        font-size: 16px;
+        font-weight: 700;
+        color: #e2e8f0;
+      }
+
+      .panel {
+        margin-top: 24px;
+        padding: 24px;
+        border-radius: 20px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        box-shadow: 0 12px 36px rgba(3, 7, 18, 0.45);
+      }
+
+      .panel h2 {
+        margin: 0 0 12px;
+        font-size: 20px;
+        letter-spacing: -0.2px;
+      }
+
+      .panel p {
+        margin: 0 0 8px;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .chip-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+        margin-top: 16px;
+      }
+
+      .chip-card {
+        padding: 14px 16px;
+        border-radius: 14px;
+        background: rgba(15, 23, 42, 0.55);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+      }
+
+      .chip-title {
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: #e2e8f0;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .chip {
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(124, 58, 237, 0.18);
+        border: 1px solid rgba(124, 58, 237, 0.4);
+        font-size: 12px;
+        color: #e9d5ff;
+        font-weight: 600;
+      }
+
+      .chip.alt {
+        background: rgba(34, 211, 238, 0.18);
+        border-color: rgba(34, 211, 238, 0.4);
+        color: #cffafe;
+      }
+
+      .chip.safe {
+        background: rgba(34, 197, 94, 0.16);
+        border-color: rgba(34, 197, 94, 0.35);
+        color: #dcfce7;
+      }
+
+      .flow {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(140px, 1fr));
+        gap: 12px;
+        align-items: center;
+        margin-top: 16px;
+      }
+
+      .flow-node {
+        padding: 14px;
+        border-radius: 14px;
+        text-align: center;
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        font-weight: 600;
+        position: relative;
+      }
+
+      .flow-node::after {
+        content: "";
+        position: absolute;
+        right: -18px;
+        top: 50%;
+        width: 22px;
+        height: 1px;
+        background: rgba(148, 163, 184, 0.5);
+      }
+
+      .flow-node:last-child::after {
+        display: none;
+      }
+
+      .diagram-card {
+        margin-top: 16px;
+        background: rgba(2, 6, 23, 0.6);
+        border-radius: 18px;
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        padding: 16px;
+      }
+
+      .diagram-title {
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        color: var(--muted);
+        margin-bottom: 12px;
+        font-weight: 700;
+      }
+
+      svg {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      .legend {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: var(--accent);
+        box-shadow: 0 0 10px rgba(34, 211, 238, 0.7);
+      }
+
+      .dot.primary {
+        background: var(--primary);
+        box-shadow: 0 0 12px rgba(124, 58, 237, 0.7);
+      }
+
+      .dot.safe {
+        background: var(--success);
+        box-shadow: 0 0 12px rgba(34, 197, 94, 0.7);
+      }
+
+      .module-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+        margin-top: 16px;
+      }
+
+      .module-card {
+        background: rgba(15, 23, 42, 0.55);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        border-radius: 16px;
+        padding: 14px 16px;
+      }
+
+      .module-card h4 {
+        margin: 0 0 8px;
+        font-size: 14px;
+      }
+
+      .module-card p {
+        margin: 0;
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .db-tree {
+        margin-top: 18px;
+      }
+
+      .tree {
+        list-style: none;
+        padding-left: 0;
+        margin: 0;
+      }
+
+      .tree ul {
+        list-style: none;
+        padding-left: 24px;
+        margin: 8px 0 0;
+        border-left: 1px dashed rgba(148, 163, 184, 0.4);
+      }
+
+      .tree li {
+        margin: 8px 0;
+        position: relative;
+        padding-left: 16px;
+      }
+
+      .tree li::before {
+        content: "";
+        position: absolute;
+        left: -1px;
+        top: 12px;
+        width: 12px;
+        height: 1px;
+        background: rgba(148, 163, 184, 0.4);
+      }
+
+      .tree-node {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 10px;
+        background: rgba(15, 23, 42, 0.55);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .tree-node.primary {
+        border-color: rgba(124, 58, 237, 0.5);
+        color: #e9d5ff;
+        background: rgba(124, 58, 237, 0.15);
+      }
+
+      .tree-node.accent {
+        border-color: rgba(34, 211, 238, 0.5);
+        color: #cffafe;
+        background: rgba(34, 211, 238, 0.15);
+      }
+
+      .tree-node.safe {
+        border-color: rgba(34, 197, 94, 0.5);
+        color: #dcfce7;
+        background: rgba(34, 197, 94, 0.12);
+      }
+
+      .divider {
+        margin: 20px 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(148, 163, 184, 0.35), transparent);
+      }
+
+      .notes {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 12px;
+        margin-top: 12px;
+      }
+
+      .note {
+        padding: 12px 14px;
+        border-radius: 14px;
+        background: rgba(15, 23, 42, 0.55);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+      }
+
+      .badge.primary {
+        background: rgba(124, 58, 237, 0.2);
+        color: #e9d5ff;
+      }
+
+      .badge.accent {
+        background: rgba(34, 211, 238, 0.2);
+        color: #cffafe;
+      }
+
+      .badge.safe {
+        background: rgba(34, 197, 94, 0.2);
+        color: #dcfce7;
+      }
+
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 0.9; }
+        50% { transform: scale(1.04); opacity: 1; }
+      }
+
+      .pulse {
+        animation: pulse 4s ease-in-out infinite;
+      }
+
+      @media (max-width: 900px) {
+        .hero {
+          grid-template-columns: 1fr;
+        }
+        .flow {
+          grid-template-columns: 1fr;
+        }
+        .flow-node::after {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="starfield"></canvas>
+    <div class="nebula"></div>
+
+    <div class="page">
+      <header class="hero">
+        <div>
+          <h1>PeoplesHive Architecture and Data Map</h1>
+          <p>
+            A developer-facing map of our HR and workforce platform: how modules connect, how data
+            flows, and how the tech stack is organized. This view mirrors our Next.js frontend, NestJS
+            backend, and the multi-tenant PostgreSQL design.
+          </p>
+          <div class="hero-stats">
+            <div class="stat">
+              <div class="label">Frontend</div>
+              <div class="value">Next.js 14 + React 18</div>
+            </div>
+            <div class="stat">
+              <div class="label">Backend</div>
+              <div class="value">NestJS 10 + Prisma</div>
+            </div>
+            <div class="stat">
+              <div class="label">Database</div>
+              <div class="value">PostgreSQL (multi-schema)</div>
+            </div>
+          </div>
+        </div>
+        <div class="hero-card">
+          <div class="badge primary">Product Focus</div>
+          <p>
+            PeoplesHive covers employee lifecycle, scheduling, payroll, compliance, and
+            organization operations. Modules are intentionally connected, so updates in one area
+            (like availability or onboarding) flow into scheduling, timesheets, and payroll.
+          </p>
+          <div class="divider"></div>
+          <div class="badge accent">Key Principles</div>
+          <div class="notes">
+            <div class="note">Multi-tenant isolation via public and tenant schemas.</div>
+            <div class="note">Role-based access with JWT and Passport strategies.</div>
+            <div class="note">Audit logs and change requests for traceability.</div>
+          </div>
+        </div>
+      </header>
+
+      <section class="panel">
+        <h2>Tech Stack Overview</h2>
+        <p>
+          Core technologies and libraries powering the platform.
+        </p>
+        <div class="chip-grid">
+          <div class="chip-card">
+            <div class="chip-title">Frontend</div>
+            <div class="chips">
+              <span class="chip">Next.js 14</span>
+              <span class="chip">React 18</span>
+              <span class="chip">Ant Design 5</span>
+              <span class="chip">Zustand</span>
+              <span class="chip">Axios</span>
+              <span class="chip">Day.js</span>
+              <span class="chip">Zod</span>
+            </div>
+          </div>
+          <div class="chip-card">
+            <div class="chip-title">Backend</div>
+            <div class="chips">
+              <span class="chip alt">NestJS 10</span>
+              <span class="chip alt">Prisma ORM</span>
+              <span class="chip alt">JWT + Passport</span>
+              <span class="chip alt">Class Validator</span>
+              <span class="chip alt">Scheduler</span>
+              <span class="chip alt">Throttler</span>
+            </div>
+          </div>
+          <div class="chip-card">
+            <div class="chip-title">Data and Infrastructure</div>
+            <div class="chips">
+              <span class="chip safe">PostgreSQL</span>
+              <span class="chip safe">GCS Storage</span>
+              <span class="chip safe">Nodemailer</span>
+              <span class="chip safe">Axios Services</span>
+              <span class="chip safe">Multi-tenant Schemas</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Architecture Flow</h2>
+        <p>
+          Request flow from UI to data and supporting services.
+        </p>
+        <div class="flow">
+          <div class="flow-node">Browser UI</div>
+          <div class="flow-node">Next.js App Router</div>
+          <div class="flow-node">NestJS API</div>
+          <div class="flow-node">Prisma</div>
+          <div class="flow-node">PostgreSQL</div>
+        </div>
+        <div class="notes">
+          <div class="note">JWT auth and RBAC enforced at API guard and service levels.</div>
+          <div class="note">Background tasks handle schedule sync, payroll, and notifications.</div>
+          <div class="note">Uploads flow through the Upload module to cloud storage.</div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Core Modules Nebula Map</h2>
+        <p>
+          The connected module system. Employees sit at the center, while scheduling, payroll,
+          onboarding, and compliance modules orbit and exchange data.
+        </p>
+        <div class="diagram-card pulse">
+          <div class="diagram-title">Module Connectivity</div>
+          <svg viewBox="0 0 1000 620" role="img" aria-label="PeoplesHive module connectivity">
+            <defs>
+              <filter id="glow">
+                <feGaussianBlur stdDeviation="6" result="coloredBlur"></feGaussianBlur>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"></feMergeNode>
+                  <feMergeNode in="SourceGraphic"></feMergeNode>
+                </feMerge>
+              </filter>
+              <linearGradient id="edgeGradient" x1="0" x2="1">
+                <stop offset="0%" stop-color="#22d3ee" stop-opacity="0.5" />
+                <stop offset="100%" stop-color="#7c3aed" stop-opacity="0.5" />
+              </linearGradient>
+            </defs>
+
+            <!-- Connections -->
+            <g stroke="url(#edgeGradient)" stroke-width="1.2" opacity="0.65">
+              <line x1="500" y1="250" x2="500" y2="120" />
+              <line x1="500" y1="250" x2="260" y2="170" />
+              <line x1="500" y1="250" x2="250" y2="300" />
+              <line x1="500" y1="250" x2="280" y2="390" />
+              <line x1="500" y1="250" x2="350" y2="470" />
+              <line x1="500" y1="250" x2="650" y2="470" />
+              <line x1="500" y1="250" x2="730" y2="320" />
+              <line x1="500" y1="250" x2="780" y2="230" />
+              <line x1="500" y1="250" x2="780" y2="410" />
+              <line x1="500" y1="250" x2="120" y2="360" />
+              <line x1="500" y1="250" x2="120" y2="470" />
+              <line x1="500" y1="250" x2="870" y2="470" />
+              <line x1="500" y1="250" x2="860" y2="140" />
+            </g>
+
+            <!-- Nodes -->
+            <g filter="url(#glow)" font-size="12" fill="#e2e8f0" font-weight="600">
+              <g>
+                <circle cx="500" cy="250" r="54" fill="#1e293b" stroke="#7c3aed" stroke-width="2" />
+                <text x="500" y="246" text-anchor="middle">Employees</text>
+                <text x="500" y="264" text-anchor="middle" fill="#a78bfa" font-size="10">Core Entity</text>
+              </g>
+              <g>
+                <circle cx="500" cy="120" r="34" fill="#0f172a" stroke="#22d3ee" stroke-width="1.6" />
+                <text x="500" y="124" text-anchor="middle">Auth & Users</text>
+              </g>
+              <g>
+                <circle cx="260" cy="170" r="32" fill="#0f172a" stroke="#38bdf8" stroke-width="1.4" />
+                <text x="260" y="174" text-anchor="middle">Org & Branches</text>
+              </g>
+              <g>
+                <circle cx="250" cy="300" r="30" fill="#0f172a" stroke="#a78bfa" stroke-width="1.4" />
+                <text x="250" y="304" text-anchor="middle">Departments</text>
+              </g>
+              <g>
+                <circle cx="280" cy="390" r="30" fill="#0f172a" stroke="#f59e0b" stroke-width="1.4" />
+                <text x="280" y="394" text-anchor="middle">Documents</text>
+              </g>
+              <g>
+                <circle cx="350" cy="470" r="30" fill="#0f172a" stroke="#22c55e" stroke-width="1.4" />
+                <text x="350" y="474" text-anchor="middle">Onboarding</text>
+              </g>
+              <g>
+                <circle cx="650" cy="470" r="32" fill="#0f172a" stroke="#22c55e" stroke-width="1.4" />
+                <text x="650" y="474" text-anchor="middle">Payroll</text>
+              </g>
+              <g>
+                <circle cx="730" cy="320" r="30" fill="#0f172a" stroke="#38bdf8" stroke-width="1.4" />
+                <text x="730" y="324" text-anchor="middle">Schedule</text>
+              </g>
+              <g>
+                <circle cx="780" cy="230" r="30" fill="#0f172a" stroke="#60a5fa" stroke-width="1.4" />
+                <text x="780" y="234" text-anchor="middle">Availability</text>
+              </g>
+              <g>
+                <circle cx="780" cy="410" r="30" fill="#0f172a" stroke="#f97316" stroke-width="1.4" />
+                <text x="780" y="414" text-anchor="middle">Timesheets</text>
+              </g>
+              <g>
+                <circle cx="120" cy="360" r="28" fill="#0f172a" stroke="#e879f9" stroke-width="1.4" />
+                <text x="120" y="364" text-anchor="middle">Notifications</text>
+              </g>
+              <g>
+                <circle cx="120" cy="470" r="26" fill="#0f172a" stroke="#94a3b8" stroke-width="1.4" />
+                <text x="120" y="474" text-anchor="middle">Audit Log</text>
+              </g>
+              <g>
+                <circle cx="870" cy="470" r="26" fill="#0f172a" stroke="#f472b6" stroke-width="1.4" />
+                <text x="870" y="474" text-anchor="middle">Kiosk</text>
+              </g>
+              <g>
+                <circle cx="860" cy="140" r="26" fill="#0f172a" stroke="#c084fc" stroke-width="1.4" />
+                <text x="860" y="144" text-anchor="middle">Change Requests</text>
+              </g>
+            </g>
+          </svg>
+        </div>
+        <div class="legend">
+          <div class="legend-item"><span class="dot primary"></span> Core entity</div>
+          <div class="legend-item"><span class="dot"></span> Operational modules</div>
+          <div class="legend-item"><span class="dot safe"></span> Compliance and onboarding</div>
+        </div>
+        <div class="module-grid">
+          <div class="module-card">
+            <h4>Auth + Users</h4>
+            <p>JWT sessions, access status, role-based permissions, and invitations.</p>
+          </div>
+          <div class="module-card">
+            <h4>Organization + Branches</h4>
+            <p>Branch settings, schedules, locations, and business hours.</p>
+          </div>
+          <div class="module-card">
+            <h4>Availability + Schedule</h4>
+            <p>Availability feeds shift scheduling and open shift claims.</p>
+          </div>
+          <div class="module-card">
+            <h4>Timesheets + Payroll</h4>
+            <p>Timesheets roll into pay runs, premium rules, and exports.</p>
+          </div>
+          <div class="module-card">
+            <h4>Documents + Onboarding</h4>
+            <p>Document compliance, onboarding checklists, and approvals.</p>
+          </div>
+          <div class="module-card">
+            <h4>Change Requests + Audit</h4>
+            <p>Employee updates flow through approvals with full audit trails.</p>
+          </div>
+          <div class="module-card">
+            <h4>Notifications + Email</h4>
+            <p>In-app notifications and email delivery for critical events.</p>
+          </div>
+          <div class="module-card">
+            <h4>Kiosk + Upload</h4>
+            <p>Clock-in flows and secure file upload storage integration.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Database Design (Multi-Tenant)</h2>
+        <p>
+          Data is split between the public schema and a tenant schema per organization. This keeps
+          core organization metadata separate from each tenant’s operational data.
+        </p>
+        <div class="db-tree">
+          <ul class="tree">
+            <li>
+              <span class="tree-node primary">PostgreSQL</span>
+              <ul>
+                <li>
+                  <span class="tree-node accent">public schema</span>
+                  <ul>
+                    <li><span class="tree-node">organizations</span></li>
+                    <li><span class="tree-node">branches</span></li>
+                    <li><span class="tree-node">tenant_schemas</span></li>
+                  </ul>
+                </li>
+                <li>
+                  <span class="tree-node safe">tenant schema (per org)</span>
+                  <ul>
+                    <li><span class="tree-node">users</span></li>
+                    <li><span class="tree-node">employees</span></li>
+                    <li><span class="tree-node">user_branches</span></li>
+                    <li><span class="tree-node">availability</span></li>
+                    <li><span class="tree-node">schedule</span></li>
+                    <li><span class="tree-node">timesheets</span></li>
+                    <li><span class="tree-node">payroll</span></li>
+                    <li><span class="tree-node">documents</span></li>
+                    <li><span class="tree-node">change_requests</span></li>
+                    <li><span class="tree-node">notifications</span></li>
+                    <li><span class="tree-node">audit_logs</span></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        <div class="notes">
+          <div class="note">Prisma connects to both public and tenant schemas.</div>
+          <div class="note">Organization selection routes traffic to the tenant schema.</div>
+          <div class="note">Audit logs and change requests keep data traceable.</div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>How Modules Connect</h2>
+        <p>
+          The following flows highlight how modules interact during common scenarios.
+        </p>
+        <div class="notes">
+          <div class="note"><strong>Onboarding</strong>: Onboarding -> Documents -> Employee -> Access Status -> Notifications</div>
+          <div class="note"><strong>Scheduling</strong>: Availability -> Schedule -> Timesheets -> Payroll</div>
+          <div class="note"><strong>Org Changes</strong>: Change Request -> Employee -> Audit Log -> Notifications</div>
+          <div class="note"><strong>Branch Ops</strong>: Organization -> Branch -> Employees -> Schedule / Payroll</div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      const canvas = document.getElementById("starfield");
+      const ctx = canvas.getContext("2d");
+      let stars = [];
+      let width = 0;
+      let height = 0;
+
+      const random = (min, max) => Math.random() * (max - min) + min;
+
+      function resize() {
+        const dpr = window.devicePixelRatio || 1;
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+        canvas.style.width = width + "px";
+        canvas.style.height = height + "px";
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        createStars();
+      }
+
+      function createStars() {
+        const count = Math.floor((width + height) / 8);
+        stars = new Array(count).fill(0).map(() => ({
+          x: random(0, width),
+          y: random(0, height),
+          r: random(0.5, 1.8),
+          alpha: random(0.2, 0.9),
+          twinkle: random(0.004, 0.012),
+        }));
+      }
+
+      function drawNebula() {
+        const gradient = ctx.createRadialGradient(width * 0.2, height * 0.3, 0, width * 0.2, height * 0.3, width * 0.6);
+        gradient.addColorStop(0, "rgba(124, 58, 237, 0.08)");
+        gradient.addColorStop(0.5, "rgba(34, 211, 238, 0.04)");
+        gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, width, height);
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, width, height);
+        drawNebula();
+        for (const star of stars) {
+          star.alpha += star.twinkle;
+          if (star.alpha > 1 || star.alpha < 0.2) star.twinkle *= -1;
+          ctx.beginPath();
+          ctx.fillStyle = `rgba(226, 232, 240, ${star.alpha})`;
+          ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        requestAnimationFrame(animate);
+      }
+
+      window.addEventListener("resize", resize);
+      resize();
+      animate();
+    </script>
+  </body>
+</html>

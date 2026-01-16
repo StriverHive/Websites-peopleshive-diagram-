@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PeoplesHive Nebula Architecture</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #050a15;
+            --nebula-purple: #6b46c1;
+            --nebula-blue: #3182ce;
+            --nebula-cyan: #2ccac9;
+            --nebula-pink: #d53f8c;
+            --text-main: #e2e8f0;
+            --text-dim: #94a3b8;
+            --glow-color: rgba(44, 202, 201, 0.4);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        #nebula-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        canvas#stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+            pointer-events: none;
+            max-width: 400px;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            margin: 0;
+            background: linear-gradient(90deg, #2ccac9, #6b46c1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            filter: drop-shadow(0 0 10px rgba(44, 202, 201, 0.5));
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            margin-top: 5px;
+            letter-spacing: 1px;
+        }
+
+        .info-panel {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            z-index: 10;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            width: 350px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+            transform: translateY(20px);
+            opacity: 0;
+            pointer-events: auto;
+        }
+
+        .info-panel.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .info-panel h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            margin: 0 0 10px 0;
+            color: var(--nebula-cyan);
+        }
+
+        .info-panel p {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: var(--text-main);
+            margin: 0;
+        }
+
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .tag {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: rgba(44, 202, 201, 0.1);
+            border: 1px solid rgba(44, 202, 201, 0.3);
+            color: var(--nebula-cyan);
+        }
+
+        .node-label {
+            font-size: 12px;
+            font-weight: 600;
+            fill: var(--text-main);
+            pointer-events: none;
+            text-shadow: 0 0 5px #000;
+        }
+
+        .link {
+            stroke-opacity: 0.2;
+            stroke-width: 1px;
+            transition: stroke-opacity 0.3s;
+        }
+
+        .node {
+            cursor: pointer;
+            transition: filter 0.3s;
+        }
+
+        .legend {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        #tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            pointer-events: none;
+            opacity: 0;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="stars"></canvas>
+    
+    <div class="overlay">
+        <h1>PeoplesHive</h1>
+        <div class="subtitle">Interactive Nebula Architecture Diagram</div>
+    </div>
+
+    <div class="legend">
+        <div class="legend-item"><div class="legend-color" style="background: var(--nebula-cyan)"></div> Core / Architecture</div>
+        <div class="legend-item"><div class="legend-color" style="background: var(--nebula-blue)"></div> Tech Stack</div>
+        <div class="legend-item"><div class="legend-color" style="background: var(--nebula-purple)"></div> Database / Schema</div>
+        <div class="legend-item"><div class="legend-color" style="background: var(--nebula-pink)"></div> Modules / Features</div>
+    </div>
+
+    <div id="nebula-container"></div>
+    
+    <div id="info-panel" class="info-panel">
+        <h2 id="info-title">Node Title</h2>
+        <p id="info-desc">Select a node to view details about the application architecture.</p>
+        <div id="info-tags" class="tag-container"></div>
+    </div>
+
+    <div id="tooltip"></div>
+
+    <script>
+        // --- Star Background ---
+        const canvas = document.getElementById('stars');
+        const ctx = canvas.getContext('2d');
+        let width, height, stars = [];
+
+        function initStars() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+            stars = [];
+            for (let i = 0; i < 200; i++) {
+                stars.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    size: Math.random() * 2,
+                    speed: Math.random() * 0.5,
+                    opacity: Math.random()
+                });
+            }
+        }
+
+        function drawStars() {
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = 'white';
+            stars.forEach(star => {
+                ctx.globalAlpha = star.opacity;
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                ctx.fill();
+                star.opacity += (Math.random() - 0.5) * 0.05;
+                if (star.opacity < 0) star.opacity = 0;
+                if (star.opacity > 1) star.opacity = 1;
+            });
+            requestAnimationFrame(drawStars);
+        }
+
+        window.addEventListener('resize', initStars);
+        initStars();
+        drawStars();
+
+        // --- Data Definition ---
+        const data = {
+            nodes: [
+                // Core
+                { id: "PeoplesHive", group: "core", radius: 40, desc: "A UK-based Restaurant HRM System designed for multi-tenant scalability.", tags: ["HRM", "SaaS", "UK-Specific"] },
+                
+                // Architecture
+                { id: "Architecture", group: "core", radius: 25, desc: "Multi-tenant architecture using schema-per-tenant isolation for high security and performance.", tags: ["Multi-tenant", "Schema-per-tenant"] },
+                { id: "Backend (NestJS)", group: "tech", radius: 20, desc: "Modular NestJS framework providing robust API services, security, and multi-tenant middleware.", tags: ["TypeScript", "NestJS", "JWT", "Passport"] },
+                { id: "Frontend (Next.js 14)", group: "tech", radius: 20, desc: "Modern React framework using App Router, server components, and Tailwind CSS for a professional UI.", tags: ["Next.js", "React", "Zustand", "Tailwind"] },
+                
+                // Tech Stack
+                { id: "PostgreSQL", group: "tech", radius: 18, desc: "Primary relational database handling complex HR data across multiple schemas.", tags: ["Relational", "SQL", "High-Performance"] },
+                { id: "Prisma ORM", group: "tech", radius: 15, desc: "Type-safe database client used for both public and tenant-specific queries.", tags: ["ORM", "Type-safe", "Multi-schema"] },
+                { id: "Zustand", group: "tech", radius: 12, desc: "Lightweight state management for auth and global app state.", tags: ["State", "React"] },
+                { id: "GCS Storage", group: "tech", radius: 12, desc: "Google Cloud Storage for secure document and image hosting.", tags: ["Cloud", "Storage"] },
+                { id: "JWT & Auth", group: "tech", radius: 14, desc: "Secure authentication using JWT with refresh token rotation and BCrypt hashing.", tags: ["Security", "JWT", "BCrypt"] },
+                { id: "Google OAuth", group: "tech", radius: 12, desc: "Seamless login experience using Google social authentication.", tags: ["OAuth2", "Social Login"] },
+                { id: "NodeMailer", group: "tech", radius: 12, desc: "Reliable email delivery for invitations and password resets.", tags: ["SMTP", "Email"] },
+                { id: "UK Localization", group: "tech", radius: 14, desc: "Built-in support for UK postcodes, phone numbers, and GMT/BST timezones.", tags: ["UK-Based", "Localization"] },
+                
+                // DB Design
+                { id: "Public Schema", group: "db", radius: 22, desc: "Global platform data shared across all organizations.", tags: ["Platform", "Shared"] },
+                { id: "Tenant Schema", group: "db", radius: 22, desc: "Isolated schema per organization ensuring complete data privacy.", tags: ["Isolated", "Private"] },
+                
+                // Public Tables
+                { id: "Organizations", group: "db", radius: 10, desc: "Stores restaurant chains and their platform status.", parent: "Public Schema" },
+                { id: "Branches", group: "db", radius: 10, desc: "Physical locations with UK postcode and phone validation.", parent: "Public Schema" },
+                { id: "Branch Configs", group: "db", radius: 10, desc: "Operating hours, shift patterns, and clock settings.", parent: "Public Schema" },
+                
+                // Tenant Tables / Modules
+                { id: "Users & Roles", group: "module", radius: 15, desc: "Comprehensive RBAC system from Super Admin to Employee.", parent: "Tenant Schema", tags: ["RBAC", "Auth"] },
+                { id: "Employees", group: "module", radius: 15, desc: "Central employee directory with personal and HR details.", parent: "Tenant Schema" },
+                { id: "Scheduling", group: "module", radius: 15, desc: "Interactive shift planning and open shift claims.", parent: "Tenant Schema", tags: ["Roster", "Shifts"] },
+                { id: "Availability", group: "module", radius: 12, desc: "Employee leave and availability management with approval workflow.", parent: "Tenant Schema" },
+                { id: "Timesheets", group: "module", radius: 15, desc: "Clock-in/out tracking and payroll data generation.", parent: "Tenant Schema", tags: ["Payroll", "Clock-in"] },
+                { id: "Announcements", group: "module", radius: 12, desc: "Company-wide communication with acknowledgment tracking.", parent: "Tenant Schema" },
+                { id: "Documents", group: "module", radius: 15, desc: "Secure document requests, submissions, and verification.", parent: "Tenant Schema", tags: ["Compliance", "RTW"] },
+                { id: "Onboarding", group: "module", radius: 15, desc: "Digital onboarding flow for new hires with custom form data.", parent: "Tenant Schema", tags: ["New Hire", "Workflow"] },
+                
+                // Modules
+                { id: "Management Portal", group: "module", radius: 18, desc: "Admin dashboard for managing branches, users, and organization settings.", tags: ["Admin", "Dashboard"] },
+                { id: "Employee Portal", group: "module", radius: 18, desc: "Self-service portal for employees to view schedules and submit docs.", tags: ["Self-service", "Mobile-ready"] }
+            ],
+            links: [
+                { source: "PeoplesHive", target: "Architecture" },
+                { source: "PeoplesHive", target: "Backend (NestJS)" },
+                { source: "PeoplesHive", target: "Frontend (Next.js 14)" },
+                { source: "Architecture", target: "Public Schema" },
+                { source: "Architecture", target: "Tenant Schema" },
+                { source: "Backend (NestJS)", target: "Frontend (Next.js 14)" }, // Inter-layer communication
+                { source: "Management Portal", target: "Employee Portal" }, // Shared logic
+                { source: "Backend (NestJS)", target: "Prisma ORM" },
+                { source: "Frontend (Next.js 14)", target: "Management Portal" },
+                { source: "Frontend (Next.js 14)", target: "Employee Portal" },
+                { source: "Prisma ORM", target: "PostgreSQL" },
+                { source: "PostgreSQL", target: "Public Schema" },
+                { source: "PostgreSQL", target: "Tenant Schema" },
+                { source: "Frontend (Next.js 14)", target: "Zustand" },
+                { source: "Backend (NestJS)", target: "GCS Storage" },
+                { source: "Backend (NestJS)", target: "JWT & Auth" },
+                { source: "Backend (NestJS)", target: "NodeMailer" },
+                { source: "Backend (NestJS)", target: "UK Localization" },
+                { source: "JWT & Auth", target: "Users & Roles" },
+                { source: "Google OAuth", target: "JWT & Auth" },
+                { source: "NodeMailer", target: "Onboarding" },
+                { source: "UK Localization", target: "Branches" },
+                
+                { source: "Public Schema", target: "Organizations" },
+                { source: "Public Schema", target: "Branches" },
+                { source: "Branches", target: "Branch Configs" },
+                
+                { source: "Tenant Schema", target: "Users & Roles" },
+                { source: "Tenant Schema", target: "Employees" },
+                { source: "Tenant Schema", target: "Scheduling" },
+                { source: "Tenant Schema", target: "Timesheets" },
+                { source: "Tenant Schema", target: "Documents" },
+                { source: "Tenant Schema", target: "Onboarding" },
+                
+                { source: "Employees", target: "Availability" },
+                { source: "Scheduling", target: "Timesheets" },
+                { source: "Onboarding", target: "Documents" },
+                { source: "Announcements", target: "Users & Roles" },
+                { source: "Tenant Schema", target: "Announcements" },
+
+                { source: "Management Portal", target: "Organizations" },
+                { source: "Management Portal", target: "Branches" },
+                { source: "Employee Portal", target: "Scheduling" },
+                { source: "Employee Portal", target: "Documents" }
+            ]
+        };
+
+        // --- D3 Graph Setup ---
+        const width_g = window.innerWidth;
+        const height_g = window.innerHeight;
+
+        const svg = d3.select("#nebula-container")
+            .append("svg")
+            .attr("width", width_g)
+            .attr("height", height_g)
+            .call(d3.zoom().on("zoom", (event) => {
+                container.attr("transform", event.transform);
+            }))
+            .append("g");
+
+        const container = svg.append("g");
+
+        // Glow Filter
+        const defs = svg.append("defs");
+        const filter = defs.append("filter")
+            .attr("id", "glow");
+        filter.append("feGaussianBlur")
+            .attr("stdDeviation", "3.5")
+            .attr("result", "coloredBlur");
+        const feMerge = filter.append("feMerge");
+        feMerge.append("feMergeNode")
+            .attr("in", "coloredBlur");
+        feMerge.append("feMergeNode")
+            .attr("in", "SourceGraphic");
+
+        const simulation = d3.forceSimulation(data.nodes)
+            .force("link", d3.forceLink(data.links).id(d => d.id).distance(100))
+            .force("charge", d3.forceManyBody().strength(-400))
+            .force("center", d3.forceCenter(width_g / 2, height_g / 2))
+            .force("collision", d3.forceCollide().radius(d => d.radius + 20));
+
+        const link = container.append("g")
+            .attr("class", "links")
+            .selectAll("line")
+            .data(data.links)
+            .enter().append("line")
+            .attr("class", "link")
+            .attr("stroke", d => {
+                if (d.source.group === 'core' || d.target.group === 'core') return 'var(--nebula-cyan)';
+                return '#4a5568';
+            });
+
+        const node = container.append("g")
+            .attr("class", "nodes")
+            .selectAll("g")
+            .data(data.nodes)
+            .enter().append("g")
+            .attr("class", "node")
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended))
+            .on("click", (event, d) => showDetails(d))
+            .on("mouseover", (event, d) => {
+                d3.select("#tooltip")
+                    .style("opacity", 1)
+                    .html(d.id)
+                    .style("left", (event.pageX + 10) + "px")
+                    .style("top", (event.pageY - 10) + "px");
+            })
+            .on("mouseout", () => {
+                d3.select("#tooltip").style("opacity", 0);
+            });
+
+        node.append("circle")
+            .attr("r", d => d.radius)
+            .attr("fill", d => {
+                switch(d.group) {
+                    case "core": return "var(--nebula-cyan)";
+                    case "tech": return "var(--nebula-blue)";
+                    case "db": return "var(--nebula-purple)";
+                    case "module": return "var(--nebula-pink)";
+                    default: return "#fff";
+                }
+            })
+            .style("filter", "url(#glow)")
+            .attr("opacity", 0.8);
+
+        node.append("text")
+            .attr("dy", d => d.radius + 15)
+            .attr("text-anchor", "middle")
+            .attr("class", "node-label")
+            .text(d => d.id);
+
+        simulation.on("tick", () => {
+            link
+                .attr("x1", d => d.source.x)
+                .attr("y1", d => d.source.y)
+                .attr("x2", d => d.target.x)
+                .attr("y2", d => d.target.y);
+
+            node
+                .attr("transform", d => `translate(${d.x},${d.y})`);
+        });
+
+        function dragstarted(event, d) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+
+        function dragged(event, d) {
+            d.fx = event.x;
+            d.fy = event.y;
+        }
+
+        function dragended(event, d) {
+            if (!event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
+
+        const infoPanel = document.getElementById('info-panel');
+        const infoTitle = document.getElementById('info-title');
+        const infoDesc = document.getElementById('info-desc');
+        const infoTags = document.getElementById('info-tags');
+
+        function showDetails(d) {
+            infoPanel.classList.remove('visible');
+            
+            setTimeout(() => {
+                infoTitle.innerText = d.id;
+                infoDesc.innerText = d.desc || "No description available.";
+                infoTags.innerHTML = "";
+                
+                if (d.tags) {
+                    d.tags.forEach(tag => {
+                        const span = document.createElement('span');
+                        span.className = 'tag';
+                        span.innerText = tag;
+                        infoTags.appendChild(span);
+                    });
+                }
+                
+                infoPanel.classList.add('visible');
+            }, 200);
+
+            // Highlight connections
+            link.style("stroke-opacity", l => (l.source.id === d.id || l.target.id === d.id) ? 0.8 : 0.05);
+            link.style("stroke-width", l => (l.source.id === d.id || l.target.id === d.id) ? "2px" : "1px");
+        }
+
+        // Close details when clicking background
+        svg.on("click", (event) => {
+            if (event.target.tagName === "svg") {
+                infoPanel.classList.remove('visible');
+                link.style("stroke-opacity", 0.2).style("stroke-width", "1px");
+            }
+        });
+
+        // Initial detail show
+        setTimeout(() => showDetails(data.nodes[0]), 1000);
+
+    </script>
+</body>
+</html>
